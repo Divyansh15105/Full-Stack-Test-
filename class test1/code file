@@ -1,0 +1,186 @@
+//Q1. Counter — Counter.jsx
+import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <h2>Count: {count}</h2>
+
+      <button onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+
+      <button
+        onClick={() => setCount(count - 1)}
+        disabled={count === 0}
+      >
+        Decrement
+      </button>
+
+      <button onClick={() => setCount(0)}>
+        Reset
+      </button>
+    </div>
+  );
+}
+
+export default Counter;
+//Q2. Todo List — TodoList.jsx
+import { useState } from "react";
+
+function TodoList() {
+  const [text, setText] = useState("");
+  const [todos, setTodos] = useState([]);
+
+  const addTodo = () => {
+    if (text.trim() === "") return;
+
+    setTodos([...todos, text]);
+    setText("");
+  };
+
+  const deleteTodo = (index) => {
+    setTodos(todos.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div>
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Enter todo"
+      />
+
+      <button onClick={addTodo}>Add</button>
+
+      <ul>
+        {todos.map((todo, index) => (
+          <li key={index}>
+            {todo}
+            <button onClick={() => deleteTodo(index)}>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default TodoList;
+//Q3. Login Toggle — LoginToggle.jsx
+import { useState } from "react";
+
+function LoginToggle() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  if (!loggedIn) {
+    return (
+      <button onClick={() => setLoggedIn(true)}>
+        Login
+      </button>
+    );
+  }
+
+  return (
+    <div>
+      <h2>Welcome!</h2>
+
+      <button onClick={() => setLoggedIn(false)}>
+        Logout
+      </button>
+    </div>
+  );
+}
+
+export default LoginToggle;
+//Q4. Live Search Filter — LiveSearch.jsx
+import { useState } from "react";
+
+function LiveSearch() {
+  const [search, setSearch] = useState("");
+
+  const names = [
+    "Rahul",
+    "Aman",
+    "Priya",
+    "Neha",
+    "Rohit",
+    "Ankit",
+    "Sneha",
+    "Vikas"
+  ];
+
+  const filteredNames = names.filter(name =>
+    name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="Search name..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      {filteredNames.length === 0 ? (
+        <p>No results found</p>
+      ) : (
+        <ul>
+          {filteredNames.map((name, index) => (
+            <li key={index}>{name}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export default LiveSearch;
+//Q5. Stopwatch — Stopwatch.jsx
+import { useState, useEffect } from "react";
+
+function Stopwatch() {
+  const [seconds, setSeconds] = useState(0);
+  const [running, setRunning] = useState(false);
+
+  useEffect(() => {
+    let timer;
+
+    if (running) {
+      timer = setInterval(() => {
+        setSeconds(prev => prev + 1);
+      }, 1000);
+    }
+
+    return () => clearInterval(timer);
+  }, [running]);
+
+  return (
+    <div>
+      <h2>{seconds} seconds</h2>
+
+      <button onClick={() => setRunning(true)}>
+        Start
+      </button>
+
+      <button onClick={() => setRunning(false)}>
+        Pause
+      </button>
+
+      <button
+        onClick={() => {
+          setRunning(false);
+          setSeconds(0);
+        }}
+      >
+        Reset
+      </button>
+    </div>
+  );
+}
+
+export default Stopwatch;
