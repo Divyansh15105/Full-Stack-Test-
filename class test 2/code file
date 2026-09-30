@@ -1,0 +1,229 @@
+//Node.js — Event Loop
+console.log('A');
+
+setTimeout(() => console.log('B'), 0);
+
+Promise.resolve().then(() => console.log('C'));
+
+console.log('D');
+
+//output
+A
+D
+C
+B
+
+//calc.js
+function add(a, b) {
+    return a + b;
+}
+
+function subtract(a, b) {
+    return a - b;
+}
+
+module.exports = {
+    add,
+    subtract
+};
+//app.js
+
+const { add, subtract } = require('./calc');
+
+console.log(add(4, 5));
+//output
+9
+
+//Express.js — Middleware & Routing
+
+const express = require('express');
+
+const app = express();
+
+app.use(express.json());
+
+// Custom authentication middleware
+
+function requireAuth(req, res, next) {
+    const apiKey = req.headers['x-api-key'];
+
+    if (apiKey !== 'secret123') {
+        return res.status(401).json({
+            error: 'Unauthorized'
+        });
+    }
+
+    next();
+}
+
+// Public GET route
+app.get('/api/books', (req, res) => {
+    res.json({
+        message: 'Public books route'
+    });
+});
+
+// Protected POST route
+app.post('/api/books', requireAuth, (req, res) => {
+    res.status(201).json({
+        message: 'Book created successfully',
+        book: req.body
+    });
+});
+
+app.listen(5000, () => {
+    console.log('Server running on port 5000');
+});
+
+//Express.js — Building a REST API
+const express = require('express');
+
+const app = express();
+
+app.use(express.json());
+
+let books = [
+    {
+        id: 1,
+        title: 'The Alchemist',
+        author: 'Paulo Coelho'
+    },
+    {
+        id: 2,
+        title: '1984',
+        author: 'George Orwell'
+    }
+];
+
+// GET /api/books
+app.get('/api/books', (req, res) => {
+    res.status(200).json(books);
+});
+
+// POST /api/books
+app.post('/api/books', (req, res) => {
+    const { title, author } = req.body;
+
+    const newBook = {
+        id: books.length > 0 ? books[books.length - 1].id + 1 : 1,
+        title: title,
+        author: author
+    };
+
+    books.push(newBook);
+
+    res.status(201).json(newBook);
+});
+
+// DELETE /api/books/:id
+app.delete('/api/books/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const index = books.findIndex(book => book.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({
+            error: 'Book not found'
+        });
+    }
+
+    const deletedBook = books.splice(index, 1);
+
+    res.status(200).json({
+        message: 'Book deleted successfully',
+        book: deletedBook[0]
+    });
+});
+
+app.listen(5000, () => {
+    console.log('Server running on port 5000');
+});
+//Express.js — Debugging & Error Handling
+app.get('/api/books/:id', (req, res) => {
+    const book = books.find(b => b.id == req.params.id);
+
+    if (!book) {
+        return res.status(404).json({
+            error: 'Book not found'
+        });
+    }
+
+    res.status(200).json(book);
+});
+//Q6. APIs — Consuming REST API in React
+import React, { useEffect, useState } from 'react';
+
+function BookList() {
+    const [books, setBooks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        fetch('http://localhost:5000/api/books')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch books');
+                }
+
+                return response.json();
+            })
+            .then(data => {
+                setBooks(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                setError(error.message);
+                setLoading(false);
+            });
+    }, []);
+
+    // Loading state
+    if (loading) {
+        return <p>Loading books...</p>;
+    }
+
+    // Error state
+    if (error) {
+        return <p>Error: {error}</p>;
+    }
+
+    // Success state
+    return (
+        <div>
+            <h2>Books</h2>
+
+            {books.map(book => (
+                <div key={book.id}>
+                    <h3>{book.title}</h3>
+                    <p>Author: {book.author}</p>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+export default BookList;
+//Q7. APIs — CORS
+npm install cors
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+
+app.use(cors());
+
+app.use(express.json());
+
+app.get('/api/books', (req, res) => {
+    res.json([
+        {
+            id: 1,
+            title: 'The Alchemist',
+            author: 'Paulo Coelho'
+        }
+    ]);
+});
+
+app.listen(5000, () => {
+    console.log('Server running on port 5000');
+});
